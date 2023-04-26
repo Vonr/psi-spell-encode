@@ -113,6 +113,8 @@ jobs:
           cache: yarn
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 6.0.2
       - name: Install
         uses: dtolnay/rust-toolchain@stable
         if: ${{ !matrix.settings.docker }}
@@ -398,6 +400,8 @@ jobs:
           cache: yarn
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 6.0.2
       - name: Install dependencies
         run: pnpm install
       - name: Download macOS x64 artifact
@@ -439,6 +443,8 @@ jobs:
           cache: yarn
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 6.0.2
       - name: Install dependencies
         run: pnpm install
       - name: Download all artifacts
