@@ -145,6 +145,8 @@ jobs:
         shell: bash
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
+      - name: Install napi cli
+        run: pnpm install -g @napi/cli
       - name: Setup node x86
         uses: actions/setup-node@v3
         if: matrix.settings.target == 'i686-pc-windows-msvc'
