@@ -14,7 +14,6 @@
         "aarch64-pc-windows-msvc",
         "armv7-unknown-linux-gnueabihf",
         "x86_64-unknown-linux-musl",
-        "x86_64-unknown-freebsd",
         "i686-pc-windows-msvc",
         "armv7-linux-androideabi",
         "universal-apple-darwin"
@@ -53,7 +52,6 @@
     "@psi-spell-encode/psi-spell-encode-win32-arm64-msvc": "0.0.0",
     "@psi-spell-encode/psi-spell-encode-linux-arm-gnueabihf": "0.0.0",
     "@psi-spell-encode/psi-spell-encode-linux-x64-musl": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-freebsd-x64": "0.0.0",
     "@psi-spell-encode/psi-spell-encode-win32-ia32-msvc": "0.0.0",
     "@psi-spell-encode/psi-spell-encode-android-arm-eabi": "0.0.0",
     "@psi-spell-encode/psi-spell-encode-darwin-universal": "0.0.0"
