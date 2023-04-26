@@ -16,6 +16,19 @@ env:
       - .editorconfig
       - docs/**
   pull_request: null
+  workflow_dispatch:
+    inputs:
+      tags:
+        branches:
+          - main
+        tags-ignore:
+          - '**'
+        paths-ignore:
+          - '**/*.md'
+          - LICENSE
+          - '**/*.gitignore'
+          - .editorconfig
+          - docs/**
 jobs:
   build:
     strategy:
