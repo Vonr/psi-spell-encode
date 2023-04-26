@@ -1,0 +1,34 @@
+[package]
+name = "psi-spell-encode"
+version = "0.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+base64-simd = "0.8.0"
+flate2 = "1.0.25"
+napi-derive = "2.12.2"
+
+[build-dependencies]
+napi-build = "2.0.1"
+
+[dependencies.serde]
+version = "1.0.160"
+features = ["derive"]
+
+[dependencies.quartz_nbt]
+git = "https://github.com/Rusty-Quartz/quartz_nbt"
+rev = "38b96935317865bec5a8b82052f4e7604d945bea"
+features = ["serde"]
+
+[dependencies.napi]
+version = "2.12.6"
+default-features = false
+features = ["napi4"]
+
+[profile.release]
+lto = true

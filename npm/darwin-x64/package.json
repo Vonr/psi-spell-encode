@@ -1,0 +1,18 @@
+{
+  "name": "@psi-spell-encode/psi-spell-encode-darwin-x64",
+  "version": "0.0.0",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "psi-spell-encode.darwin-x64.node",
+  "files": [
+    "psi-spell-encode.darwin-x64.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}

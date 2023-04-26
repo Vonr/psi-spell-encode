@@ -1,0 +1,18 @@
+{
+  "name": "@psi-spell-encode/psi-spell-encode-linux-arm-gnueabihf",
+  "version": "0.0.0",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm"
+  ],
+  "main": "psi-spell-encode.linux-arm-gnueabihf.node",
+  "files": [
+    "psi-spell-encode.linux-arm-gnueabihf.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}

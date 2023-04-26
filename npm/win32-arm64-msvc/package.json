@@ -1,0 +1,18 @@
+{
+  "name": "@psi-spell-encode/psi-spell-encode-win32-arm64-msvc",
+  "version": "0.0.0",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "psi-spell-encode.win32-arm64-msvc.node",
+  "files": [
+    "psi-spell-encode.win32-arm64-msvc.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
