@@ -40,20 +40,5 @@
     "universal": "napi universal",
     "version": "napi version"
   },
-  "packageManager": "yarn@3.5.0",
-  "optionalDependencies": {
-    "@psi-spell-encode/psi-spell-encode-win32-x64-msvc": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-darwin-x64": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-linux-x64-gnu": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-darwin-arm64": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-android-arm64": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-linux-arm64-gnu": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-linux-arm64-musl": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-win32-arm64-msvc": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-linux-arm-gnueabihf": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-linux-x64-musl": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-win32-ia32-msvc": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-android-arm-eabi": "0.0.0",
-    "@psi-spell-encode/psi-spell-encode-darwin-universal": "0.0.0"
-  }
+  "packageManager": "yarn@3.5.0"
 }

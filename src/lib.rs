@@ -4,14 +4,15 @@ extern crate napi_derive;
 use std::{
     collections::HashMap,
     io::{BufRead, Cursor, Read},
+    ops::Deref,
 };
 
 use flate2::read::{GzDecoder, GzEncoder};
-use napi::{bindgen_prelude::Uint8Array, Status};
+use napi::{bindgen_prelude::Utf16String, Status};
 use quartz_nbt::{io::Flavor, serde::deserialize_from_buffer};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[napi(constructor)]
 pub struct Spell {
@@ -23,7 +24,7 @@ pub struct Spell {
     pub name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[napi(object)]
 pub struct Mod {
@@ -33,7 +34,7 @@ pub struct Mod {
     pub version: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[napi(object)]
 pub struct Piece {
@@ -102,6 +103,7 @@ pub struct SpellData {
 }
 
 impl Spell {
+    #[inline]
     pub fn bin(&self) -> Vec<u8> {
         let mut out: Vec<u8> = Vec::new();
         {
@@ -164,6 +166,7 @@ impl Spell {
         out
     }
 
+    #[inline]
     pub fn decode(data: &[u8]) -> Self {
         #[inline]
         fn read_until<T>(cursor: &mut Cursor<T>, byte: u8) -> Vec<u8>
@@ -296,42 +299,43 @@ impl Spell {
     }
 }
 
+impl From<&Spell> for Vec<u8> {
+    #[inline]
+    fn from(value: &Spell) -> Self {
+        value.bin()
+    }
+}
+
+impl<T: Deref<Target = [u8]>> From<T> for Spell {
+    #[inline]
+    fn from(value: T) -> Self {
+        Self::decode(&value)
+    }
+}
+
 #[napi]
 pub fn spell_from_snbt(snbt: String) -> Result<Spell, napi::Error> {
-    let snbt = quartz_nbt::snbt::parse(&snbt).map_err(|e| {
-        napi::Error::new(
-            Status::GenericFailure,
-            format!("Error parsing file as SNBT: {e}"),
-        )
-    })?;
+    let snbt =
+        quartz_nbt::snbt::parse(&snbt).map_err(|e| napi::Error::new(Status::GenericFailure, e))?;
 
     let mut bytes = Vec::new();
-    if quartz_nbt::io::write_nbt(&mut bytes, None, &snbt, Flavor::Uncompressed).is_err() {
-        return Err(napi::Error::new(
-            Status::GenericFailure,
-            "Could not write SNBT to bytes".to_string(),
-        ));
+    if let Err(e) = quartz_nbt::io::write_nbt(&mut bytes, None, &snbt, Flavor::Uncompressed) {
+        return Err(napi::Error::new(Status::GenericFailure, e));
     }
 
     Ok(deserialize_from_buffer(&bytes)
-        .map_err(|e| {
-            napi::Error::new(
-                Status::GenericFailure,
-                format!("Could not deserialize SNBT: {e}"),
-            )
-        })?
+        .map_err(|e| napi::Error::new(Status::GenericFailure, e))?
         .0)
 }
 
 #[napi]
-pub fn decode_spell_from_bytes(bytes: Uint8Array) -> Spell {
-    Spell::decode(&bytes)
+pub fn decode_spell_from_bytes(bytes: Vec<u8>) -> Spell {
+    bytes.into()
 }
 
 #[napi]
-pub fn encode_bytes_to_url_safe(bytes: Uint8Array) -> String {
-    let bytes = bytes.to_vec();
-    const LEVEL: flate2::Compression = flate2::Compression::best();
+pub fn encode_bytes_to_url_safe(bytes: Vec<u8>) -> String {
+    const LEVEL: flate2::Compression = flate2::Compression::fast();
     let mut gz = GzEncoder::new(bytes.as_slice(), LEVEL);
     let mut encoded = Vec::new();
     gz.read_to_end(&mut encoded).unwrap();
@@ -340,19 +344,40 @@ pub fn encode_bytes_to_url_safe(bytes: Uint8Array) -> String {
 }
 
 #[napi]
-pub fn decode_url_safe_to_bytes(str: String) -> Vec<u8> {
-    let mut gz = GzDecoder::new(str.as_bytes());
+pub fn decode_url_safe_to_bytes(url_safe: String) -> Result<Vec<u8>, napi::Error> {
+    let mut bytes = url_safe.into_bytes();
+    let decoded = base64_simd::URL_SAFE
+        .decode_inplace(&mut bytes)
+        .map_err(|e| napi::Error::new(Status::GenericFailure, e))?
+        .to_vec();
+    let mut gz = GzDecoder::new(&decoded[..]);
     let mut decoded = Vec::new();
-    gz.read_to_end(&mut decoded).unwrap();
-    decoded
+    gz.read_to_end(&mut decoded)
+        .map_err(|e| napi::Error::new(Status::GenericFailure, e))?;
+    Ok(decoded)
 }
 
 #[napi]
-pub fn encode_spell_to_bytes(spell: &Spell) -> Result<Vec<u8>, napi::Error> {
-    quartz_nbt::serde::serialize(spell, None, Flavor::Uncompressed).map_err(|e| {
-        napi::Error::new(
-            Status::InvalidArg,
-            format!("Failed to serialize spell: {e}"),
-        )
-    })
+pub fn encode_spell_to_bytes(spell: &Spell) -> Vec<u8> {
+    spell.into()
+}
+
+#[napi]
+pub fn decode_spell(url_safe: Utf16String) -> Result<Spell, napi::Error> {
+    Ok(Spell::decode(&decode_url_safe_to_bytes(
+        (*url_safe).to_string(),
+    )?))
+}
+
+#[napi]
+pub fn encode_spell(spell: &Spell) -> Result<Utf16String, napi::Error> {
+    Ok(encode_bytes_to_url_safe(encode_spell_to_bytes(spell)).into())
+}
+
+#[napi]
+pub fn spell_to_snbt(spell: &Spell) -> Result<String, napi::Error> {
+    let ser = quartz_nbt::serde::serialize(spell, None, Flavor::Uncompressed).unwrap();
+    quartz_nbt::io::read_nbt(&mut Cursor::new(ser), Flavor::Uncompressed)
+        .map(|o| o.0.to_snbt())
+        .map_err(|e| napi::Error::new(Status::GenericFailure, e))
 }
