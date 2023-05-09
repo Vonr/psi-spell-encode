@@ -1,6 +1,6 @@
 {
   "name": "@psi-spell-encode/psi-spell-encode-win32-arm64-msvc",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "os": [
     "win32"
   ],
